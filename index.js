@@ -17,24 +17,7 @@ const allowedOrigins = new Set(
   ].filter(Boolean)
 );
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      try {
-        const url = new URL(origin);
-        if (allowedOrigins.has(url.origin)) return cb(null, true);
-        if (
-          url.hostname === "nucizzz.shop" ||
-          url.hostname.endsWith(".nucizzz.shop")
-        ) {
-          return cb(null, true);
-        }
-      } catch {}
-      return cb(new Error("CORS not allowed"), false);
-    },
-  })
-);
+app.use(cors({ origin: true, credentials: false }));
 
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
