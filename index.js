@@ -7,19 +7,33 @@ dotenv.config();
 
 const app = express();
 
+app.set("etag", false);
+
 app.use(express.json());
 
 app.use(
   cors({
-    origin: true,
+    origin: (origin, cb) => cb(null, true),
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+    optionsSuccessStatus: 204,
   })
 );
-app.options("*", cors({ origin: true }));
+app.options("*", cors());
 
 app.use((req, res, next) => {
-  res.set("Cache-Control", "no-store");
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.set(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  res.set("Surrogate-Control", "no-store");
+  res.set("Vary", "Origin");
   next();
 });
 
@@ -37,22 +51,19 @@ function requireToken(req, res, next) {
 
 app.post("/api/auth/login", (req, res) => {
   const { username, password } = req.body || {};
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
+  if (username === ADMIN_USER && password === ADMIN_PASS)
     return res.json({ token: API_TOKEN });
-  }
   return res.status(401).json({ error: "invalid_credentials" });
 });
 
 app.get("/api/ping", (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.json({ ok: true });
+  res.status(200).json({ ok: true, t: Date.now() });
 });
 
 app.use("/api", requireToken, routes);
 
 const PORT = Number(process.env.PORT || 4000);
 const HOST = process.env.HOST || "0.0.0.0";
-
 app.listen(PORT, HOST, () => {
   console.log(`API on http://${HOST}:${PORT}`);
 });
