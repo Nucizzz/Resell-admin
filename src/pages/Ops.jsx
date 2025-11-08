@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { scanBarcode, createPurchase, createSale } from "../api";
-import ScanInput from "../components/ScanInput";
+import ScanInput from "../components/scanInput";
 
 export default function Ops() {
   const [barcode, setBarcode] = useState("");

@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Nav from "./components/Nav.jsx";
+import Nav from "./components/nav.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Scan from "./pages/Scan.jsx";
 import Ops from "./pages/Ops.jsx";

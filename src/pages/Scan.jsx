@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ScanInput from "../components/ScanInput";
+import ScanInput from "../components/scanInput";
 import { scanBarcode } from "../api";
 
 export default function Scan() {
