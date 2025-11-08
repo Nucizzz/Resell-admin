@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createProduct } from "../api";
-import ScanInput from "../components/ScanInput";
+import ScanInput from "../components/scanInput";
 
 export default function NewProduct() {
   const [p, setP] = useState({

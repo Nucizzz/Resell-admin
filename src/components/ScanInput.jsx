@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import Scanner from "./Scanner";
+import Scanner from "./scanner";
 
 export default function ScanInput({
   value,
