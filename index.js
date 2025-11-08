@@ -8,45 +8,61 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const allowed = ["http://localhost:5173", "https://app.nucizzz.shop"];
+const allowedOrigins = new Set(
+  [
+    "http://localhost:5173",
+    "https://nucizzz.shop",
+    "https://app.nucizzz.shop",
+    process.env.FRONTEND_ORIGIN || "",
+  ].filter(Boolean)
+);
 
 app.use(
   cors({
-    origin: (origin, cb) => cb(null, !origin || allowed.includes(origin)),
-    credentials: false,
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      try {
+        const url = new URL(origin);
+        if (allowedOrigins.has(url.origin)) return cb(null, true);
+        if (
+          url.hostname === "nucizzz.shop" ||
+          url.hostname.endsWith(".nucizzz.shop")
+        ) {
+          return cb(null, true);
+        }
+      } catch {}
+      return cb(new Error("CORS not allowed"), false);
+    },
   })
 );
 
-const TOK = process.env.API_TOKEN;
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
+const API_TOKEN = process.env.API_TOKEN || "api_live_localtoken";
 
-// middleware: richiede Authorization: Bearer <token>
 function requireToken(req, res, next) {
   const h = req.headers.authorization || "";
   const token = h.startsWith("Bearer ") ? h.slice(7) : null;
-  if (!token || token !== TOK)
+  if (!token || token !== API_TOKEN)
     return res.status(401).json({ error: "unauthorized" });
   next();
 }
 
-// login: restituisce il token se credenziali corrette
 app.post("/api/auth/login", (req, res) => {
   const { username, password } = req.body || {};
-  if (
-    username === process.env.ADMIN_USER &&
-    password === process.env.ADMIN_PASS
-  ) {
-    return res.json({ token: TOK });
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    return res.json({ token: API_TOKEN });
   }
   return res.status(401).json({ error: "invalid_credentials" });
 });
 
 app.get("/api/ping", (req, res) => res.json({ ok: true }));
 
-// proteggi tutte le rotte vere dell’app
 app.use("/api", requireToken, routes);
 
-const PORT = process.env.PORT || 4000;
+const PORT = Number(process.env.PORT || 4000);
 const HOST = process.env.HOST || "0.0.0.0";
+
 app.listen(PORT, HOST, () => {
   console.log(`API on http://${HOST}:${PORT}`);
 });
