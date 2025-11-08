@@ -15,8 +15,14 @@ export async function login(username, password) {
 }
 
 export async function getPing() {
-  const r = await fetch(`${BASE}/ping`);
-  return r.json();
+  try {
+    const url = `${BASE}/ping?t=${Date.now()}`;
+    const r = await fetch(url, { cache: "no-store", mode: "cors" });
+    if (!r.ok) return { ok: false, status: r.status };
+    return r.json();
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
 }
 
 export async function scanBarcode(barcode) {

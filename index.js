@@ -6,9 +6,7 @@ import routes from "./routes.js";
 dotenv.config();
 
 const app = express();
-
 app.set("etag", false);
-
 app.use(express.json());
 
 app.use(
@@ -64,6 +62,4 @@ app.use("/api", requireToken, routes);
 
 const PORT = Number(process.env.PORT || 4000);
 const HOST = process.env.HOST || "0.0.0.0";
-app.listen(PORT, HOST, () => {
-  console.log(`API on http://${HOST}:${PORT}`);
-});
+app.listen(PORT, HOST, () => {});
