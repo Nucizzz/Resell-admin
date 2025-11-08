@@ -56,3 +56,13 @@ export async function createProduct(payload) {
   });
   return r.json();
 }
+
+export async function getPing() {
+  try {
+    const r = await fetch(`${BASE}/ping`, { cache: "no-store" });
+    if (!r.ok) return { ok: false, status: r.status };
+    return r.json();
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
