@@ -6,18 +6,22 @@ import routes from "./routes.js";
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
 
-const allowedOrigins = new Set(
-  [
-    "http://localhost:5173",
-    "https://nucizzz.shop",
-    "https://app.nucizzz.shop",
-    process.env.FRONTEND_ORIGIN || "",
-  ].filter(Boolean)
+app.use(
+  cors({
+    origin: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
+app.options("*", cors({ origin: true }));
 
-app.use(cors({ origin: true, credentials: false }));
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
@@ -39,7 +43,10 @@ app.post("/api/auth/login", (req, res) => {
   return res.status(401).json({ error: "invalid_credentials" });
 });
 
-app.get("/api/ping", (req, res) => res.json({ ok: true }));
+app.get("/api/ping", (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.json({ ok: true });
+});
 
 app.use("/api", requireToken, routes);
 
