@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { API_BASE, API_BASE_FALLBACKS } from "../api";
+import { API_BASE } from "../api";
+
 
 export default function Settings() {
   const [locationId, setLocationId] = useState(1);
@@ -17,6 +19,7 @@ export default function Settings() {
           </select>
         </div>
         <div className="badge">{API_BASE}</div>
+
         {API_BASE_FALLBACKS.length > 0 && (
           <div className="badge badge--muted">
             fallback: {API_BASE_FALLBACKS.join(", ")}
