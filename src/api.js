@@ -12,12 +12,9 @@ function resolveBaseUrl(value) {
 
 const CONFIGURED_BASE = resolveBaseUrl(import.meta.env.VITE_API_BASE);
 const BASE_CANDIDATES = Array.from(
-  new Set(
-    CONFIGURED_BASE === DEFAULT_BASE
-      ? [DEFAULT_BASE]
-      : [CONFIGURED_BASE, DEFAULT_BASE]
-  )
+  new Set([DEFAULT_BASE, CONFIGURED_BASE].filter(Boolean))
 );
+
 
 export const API_BASE = BASE_CANDIDATES[0];
 export const API_BASE_FALLBACKS = BASE_CANDIDATES.slice(1);
